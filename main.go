@@ -169,8 +169,7 @@ func getParsedItems(url string) ([]ItemType, error) {
 
 		// yet another hell
 		html, _ := s.Find(".about").Html()
-		match := regexp.MustCompile(`.*<(div|a)`).FindString(html)
-		price, _ := strconv.Atoi(regexp.MustCompile(`[^\d]`).ReplaceAllString(match, ""))
+		price, _ := strconv.Atoi(regexp.MustCompile(`[^\d]`).ReplaceAllString(html, ""))
 
 		items = append(items, ItemType{id, title, link, price})
 	})
