@@ -16,13 +16,12 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+// ItemType is one item in page of Avito search results
 type ItemType struct {
-	ID        string
-	Title     string
-	Link      string
-	Address   string
-	Price     int
-	Comission string
+	ID    string
+	Title string
+	Link  string
+	Price int
 }
 
 var (
@@ -82,12 +81,8 @@ func notifier(items []*ItemType, count int) {
 		if item.Price > 0 {
 			buffer.WriteString(" за *")
 			buffer.WriteString(strconv.Itoa(item.Price))
-			buffer.WriteString("* руб. в месяц (_")
-			buffer.WriteString(item.Comission)
-			buffer.WriteString("_)")
+			buffer.WriteString("* руб.")
 		}
-		buffer.WriteString("\n")
-		buffer.WriteString(item.Address)
 		buffer.WriteString("\n\n")
 	}
 
@@ -171,16 +166,13 @@ func getParsedItems(url string) ([]ItemType, error) {
 			err = errors.New("Can not get attribute 'href'")
 		}
 		link := link + href
-		commission := strings.TrimSpace(s.Find(".about__commission").Text())
 
 		// yet another hell
 		html, _ := s.Find(".about").Html()
 		match := regexp.MustCompile(`.*<(div|a)`).FindString(html)
 		price, _ := strconv.Atoi(regexp.MustCompile(`[^\d]`).ReplaceAllString(match, ""))
 
-		address := strings.TrimSpace(s.Find(".address").Text())
-
-		items = append(items, ItemType{id, title, link, address, price, commission})
+		items = append(items, ItemType{id, title, link, price})
 	})
 
 	return items, err
